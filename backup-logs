@@ -1,0 +1,36 @@
+#!/bin/sh
+LOGDIR="$HOME/.config/logs"
+
+DIRNAME=backups-$(date +"%d-%m")
+BACKUPDIR=$LOGDIR/$DIRNAME
+COMPRESSED_DIR="$HOME/.config/backup-logs"
+
+check_and_create_dir() {
+  [ ! -d $1 ] && mkdir -p "$1" && echo "$1 directory created"
+}
+
+NUMFILES=`find $LOGDIR -type f| wc -l`
+
+#checks if the number of files in $LOGDIR is greater or equal to 5
+if [ $NUMFILES -ge 5 ]; then
+  
+  #creates $BACKUPDIR if it does not already exist
+  check_and_create_dir $BACKUPDIR
+
+  #move the 5 or more files into $BACKUPDIR
+  find $LOGDIR -type f -exec mv -t $BACKUPDIR {} +
+
+  #now compress directory with files we just moved above
+  tar -czvf $LOGDIR/$DIRNAME.tar.gz $BACKUPDIR
+
+  #create compressed backup dir if it does not exit
+  check_and_create_dir $COMEPRESSED_DIR
+
+  #move original directory to backup-logs dir using rsync
+  rsync -a $BACKUPDIR/ $COMPRESSED_DIR
+fi
+
+
+
+
+

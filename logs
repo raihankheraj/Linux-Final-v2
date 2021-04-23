@@ -1,0 +1,19 @@
+#!/bin/sh
+LOGDIR="/home/vagrant/.config/logs"
+LOGFILE=warning-$(date +"%d-%m-%H-%M").log
+
+#check if user is running script as root
+if [ `id -u` -ne 0 ]; then 
+	echo "Please run as root"; 
+	exit 1; 
+fi
+
+
+#check if logs directory already made, if not create it
+[ ! -d $LOGDIR ] && mkdir -p "$LOGDIR" && echo "Logs directory created"
+
+#collects kernel messages (-k) from previous boot (-b) with warning or above (-p 4)
+journalctl -k -p 4 -b > "$LOGDIR/$LOGFILE"
+
+#let the user know that log file with specific time stamp has been added
+echo "$LOGDIR/$LOGFILE has been created."

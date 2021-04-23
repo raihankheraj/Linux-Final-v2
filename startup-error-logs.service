@@ -1,0 +1,10 @@
+[Unit]
+Description=Runs the log shell script on boot
+
+[Service]
+Type=simple
+ExecStart=/home/vagrant/bin/logs
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
